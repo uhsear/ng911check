@@ -160,20 +160,20 @@ PASS  ADDR-05 declares exactly the columns it reads
 PASS  the package folder holds Python files only, so no vendor domain file ships  <-- pinned defect
 ...
 --------------------------------------------------------------------
-989 assertions, 0 failed
+990 assertions, 0 failed
 ```
 
-The full run prints all 989 assertions. Each `...` line above is where the block is cut.
+The full run prints all 990 assertions. Each `...` line above is where the block is cut.
 `python -m ng911check --self-test` exits 0 when every assertion passes and 1 when one fails.
 
 | Host | Python | Assertions |
 |---|---|---|
-| Windows | 3.13.2 | 989 assertions, 0 failed |
-| Windows | 3.12.10 | 989 assertions, 0 failed |
-| Windows | 3.11.15 | 989 assertions, 0 failed |
-| Windows | 3.10.20 | 989 assertions, 0 failed |
-| Windows | 3.9.25 | 989 assertions, 0 failed |
-| Ubuntu | 3.12.3 | 989 assertions, 0 failed |
+| Windows | 3.13.2 | 990 assertions, 0 failed |
+| Windows | 3.12.10 | 990 assertions, 0 failed |
+| Windows | 3.11.15 | 990 assertions, 0 failed |
+| Windows | 3.10.20 | 990 assertions, 0 failed |
+| Windows | 3.9.25 | 990 assertions, 0 failed |
+| Ubuntu | 3.12.3 | 990 assertions, 0 failed |
 
 The Windows 3.9, 3.10 and 3.11 rows run on uv-managed builds of CPython. The self-test also parses
 every source file with `feature_version=(3, 9)`. A separate assertion walks the syntax tree and
@@ -182,7 +182,7 @@ fails on an f-string, because the parse alone accepts one. The Ubuntu row is 3.1
 The counts are equal on every host because the self-test never branches on the platform. It writes
 its files to a temporary folder and removes the folder at the end.
 
-`coverage run --branch -m ng911check --self-test` (coverage 7.16.1) reports 100 percent of 5186
+`coverage run --branch -m ng911check --self-test` (coverage 7.16.1) reports 100 percent of 5190
 statements and 1510 branches for the whole package, the test modules included. One line carries a
 `pragma: no branch`. It is the loop in `Polyline.midpoint` in `geometry.py`. That loop never ends
 normally, because its last segment always returns. Branch coverage cannot see that. The reader
@@ -303,7 +303,7 @@ one of those files. The guard compares file identity, so a hard link to an input
 run leaves that file as it was.
 
 Exit codes: 0 no ERROR finding, 1 at least one ERROR after the overrides, 2 an input or settings
-file was refused or could not be read, or a polygon layer holds no address point, 64 usage error, 70 an unexpected crash. A crash never
+file was refused or could not be read, or a run was refused for lack of a verdict (a polygon layer holds no address point, a street layer has no address within a mile of its extent, or an MSAG holds no eligible record), 64 usage error, 70 an unexpected crash. A crash never
 reads as a finding.
 
 In the runs below, `ARGS` stands for `--addresses demo/addresses.csv --streets demo/streets.csv --settings demo/agency.ini --units feet`.
@@ -781,6 +781,7 @@ ESN rule in ADDR-05, one to five digits and not zero, is also a local choice.
 - XLAYER-19 reports nothing for a point whose street name matches no segment in the street layer, because it has no own street to measure. XLAYER-04 is the check for that case.
 - XLAYER-18 and XLAYER-19 test every same-name or ranged segment for every point, so a layer with hundreds of thousands of points and thousands of segments of one street name runs for a long time.
 - A street layer is refused for a lack of address positions only when the street file holds geometry and an address file is given. A street file in CSV form has no geometry, so a run with it is never refused for that reason.
+- The self-test fails its `package folder holds Python files only` assertion when the package folder holds any other file or subfolder, for example a stale copy left from an earlier upload. Run it from a clean copy.
 - A street file in CSV form skips the four range fit checks and the run can still exit 0. The report says so in NOTICE lines and in the `Notices:` line.
 - The `--out` CSV holds findings only. The notices appear in the console report and in a `--format json` file, so a CSV from a run that skipped checks looks the same as a clean one.
 - Exit code 1 means an ERROR finding, and it also means the self-test failed or the catalog block is out of date. Do not use the code alone to tell a finding from a tool fault outside a normal run.

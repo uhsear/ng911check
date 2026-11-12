@@ -258,3 +258,9 @@ def section(h):
                                "--settings", base_args[5], "--units", "feet"])
         c(all("%s was skipped: it needs street geometry" % cid in out for cid in ("STREET-14", "XLAYER-17", "XLAYER-18", "XLAYER-19")),
           "a street file without geometry skips all four checks and says why")
+        clean_streets = 'SEGMENT_ID,RCL_NGUID,NAME,PREFIX,TYPE,SUFFIX,FROMLEFT,TOLEFT,FROMRIGHT,TORIGHT,Parity_L,Parity_R,ONEWAY,LCITY,RCITY,LESN,RESN,LEFTZIP,RIGHTZIP,State_L,State_R,County_L,County_R,IncMuni_L,IncMuni_R,St_Name,St_PreDir,St_PosTyp,St_PreTyp,St_PreMod,St_PosMod,St_PreSep,DiscrpAgID,COMPARE\n1,RCL1@agency.example.org,ELM,,ST,,101,199,100,198,O,E,B,TESTVILLE,TESTVILLE,100,100,00000,00000,FL,FL,EXAMPLE,EXAMPLE,TESTVILLE,TESTVILLE,ELM,,ST,,,,,agency.example.org,ELM ST\n'
+        clean_address = 'Add_Number,PREFIX,STREET_NA,TYPE,SUFFIX,UNIT,BLDG,ADDRESS,HOUSE_NU,CITY,INC_MUNI,STATE,COUNTY,Country,ZIP_CODE,ESN,STATUS,Site_NGUID,DiscrpAgID,COMPARE,St_Name,St_PreDir,St_PosTyp,St_PreTyp,St_PreMod,St_PosMod,St_PreSep,X,Y\n101,,ELM,ST,,,,101 ELM ST,101,TESTVILLE,,FL,EXAMPLE,US,00000,100,ACTIVE,ADR101@agency.example.org,agency.example.org,ELM ST,ELM,,ST,,,,,1000,1010\n'
+        code, out, err = call(["--addresses", tmp.write("clean.csv", clean_address), "--streets", tmp.write("clean_s.csv", clean_streets),
+                               "--settings", base_args[5], "--units", "feet"])
+        c(code == 0 and "Findings: 0 ERROR, 0 WARNING" in out and "not a clean result" in out,
+          "a street file without geometry exits 0 with the skip notices when no ERROR was found, a documented choice")
